@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFrameworks>net10.0;net48;netstandard2.0</TargetFrameworks>
+        <AssemblyName>AHSEsim.Numerics</AssemblyName>
+        <RootNamespace>AHSEsim.Numerics</RootNamespace>
+        <IsPackable>true</IsPackable>
+        <PackageId>AhseSim.Numerics</PackageId>
+        <PackageId Condition="'$(StrongName)'=='True'">AHSEsim.Numerics.Signed</PackageId>
+        <VersionPrefix>6.0.2</VersionPrefix>
+        <VersionSuffix>beta1</VersionSuffix>
+        <Title>AhseSim Numerics$(TitleSuffix)</Title>
+        <Description>AHSEsim.Numerics.AHSEsim Numerics is the numerical foundation of the AHSEsim project, aiming to provide methods and algorithms for numerical computations in science, engineering and every day use. Supports .NET 8.0 or .NET 9.0, on Windows, Linux and Mac.$(DescriptionSuffix)</Description>
+        <PackageTags>math numeric statistics probability integration interpolation regression solve fit linear algebra matrix fft</PackageTags>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+        <NoWarn>1701;1702;1705;1591;1573</NoWarn>
+        <ApplicationIcon>hawtc.ico</ApplicationIcon>
+        <Platforms>AnyCPU;x64</Platforms>
+        <Company>AhseSim@copyright 赵子祯</Company>
+        <Product>AhseSim.Numerics</Product>
+        <PackageProjectUrl>http://www.openwecd.fun/</PackageProjectUrl>
+        <Copyright>Copyright AHSEsim.Numerics Project</Copyright>
+        <Authors>赵子祯, Christoph Ruegg, Marcus Cuda, Jurgen Van Gael</Authors>
+        <Version>$(TitleSuffix)</Version>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
+      <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48.0|AnyCPU'">
+      <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|x64'">
+      <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48.0|x64'">
+      <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|AnyCPU'">
+      <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48.0|AnyCPU'">
+      <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net9.0|x64'">
+      <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48.0|x64'">
+      <IsAotCompatible>True</IsAotCompatible>
+    </PropertyGroup>
+    <ItemGroup>
+      <Content Include="hawtc.ico" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.100">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="LinearAlgebra\Int\" />
+    </ItemGroup>
+</Project>
