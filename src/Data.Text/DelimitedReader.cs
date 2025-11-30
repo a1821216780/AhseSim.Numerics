@@ -4,7 +4,7 @@
 // http://github.com/mathnet/mathnet-numerics
 // http://mathnetnumerics.codeplex.com
 //
-// Copyright (c) 2009-2015 AHSEsim
+// Copyright (c) 2024-2026 AHSEsim
 //
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation

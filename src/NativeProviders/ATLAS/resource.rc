@@ -67,12 +67,12 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "http://numerics.mathdotnet.com/"
+            VALUE "Comments", "http://openwecd.fun/"
             VALUE "CompanyName", "AHSEsim"
-            VALUE "FileDescription", "MathNET Numerics ATLAS Native Provider"
+            VALUE "FileDescription", "AHSEsim Numerics ATLAS Native Provider"
             VALUE "FileVersion", "0.1.0.0"
             VALUE "InternalName", "AHSEsim"
-            VALUE "LegalCopyright", "Copyright (C) AHSEsim 2009-2015"
+            VALUE "LegalCopyright", "Copyright (C) AHSEsim 2024-2026"
             VALUE "OriginalFilename", "AHSEsim.Numerics.ATLAS"
             VALUE "ProductName", "AHSEsim Numerics"
             VALUE "ProductVersion", "0.1.0.0"

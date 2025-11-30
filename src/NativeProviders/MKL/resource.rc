@@ -67,9 +67,9 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "http://numerics.mathdotnet.com/"
+            VALUE "Comments", "http://openwecd.fun/"
             VALUE "CompanyName", "AHSEsim"
-            VALUE "FileDescription", "MathNET Numerics MKL Native Provider"
+            VALUE "FileDescription", "AHSEsim Numerics MKL Native Provider"
             VALUE "FileVersion", "3.0.0.0"
             VALUE "InternalName", "AHSEsim"
             VALUE "LegalCopyright", "Copyright (C) AHSEsim 2009-2021"

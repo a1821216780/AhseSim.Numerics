@@ -67,15 +67,15 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "http://numerics.mathdotnet.com/"
+            VALUE "Comments", "http://openwecd.fun/"
             VALUE "CompanyName", "AHSEsim"
-            VALUE "FileDescription", "MathNET Numerics OpenBLAS Native Provider"
-            VALUE "FileVersion", "0.3.0.0"
+            VALUE "FileDescription", "AHSEsim Numerics OpenBLAS Native Provider"
+            VALUE "FileVersion", "6.0.1"
             VALUE "InternalName", "AHSEsim"
-            VALUE "LegalCopyright", "Copyright (C) AHSEsim 2009-2015"
-            VALUE "OriginalFilename", "libMathNetNumericsOpenBLAS"
+            VALUE "LegalCopyright", "Copyright (C) AHSEsim 2024-2026"
+            VALUE "OriginalFilename", "libNumericsOpenBLAS"
             VALUE "ProductName", "AHSEsim Numerics"
-            VALUE "ProductVersion", "0.3.0.0"
+            VALUE "ProductVersion", "6.0.1"
         END
     END
     BLOCK "VarFileInfo"

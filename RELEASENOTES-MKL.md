@@ -1,3 +1,8 @@
+### 6.0.0 - 2025-11-30
+* New binary names and package structure with runtime folders
+* With Intel oneAPI 2025.3
+* Note that AHSEsim.Numerics.Providers.MKL.dll is required for this to work with AHSEsim.Numerics v6
+
 ### 3.0.0 - 2022-02-19
 * New binary names and package structure with runtime folders
 * With Intel oneAPI 2022
