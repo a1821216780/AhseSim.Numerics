@@ -78,3 +78,4 @@ docs/Contributors.md
 docs/ReleaseNotes.md
 docs/ReleaseNotes-*.md
 /pack
+/src/NativeProviders/Windows/OpenBLAS/libopenblas.dll
