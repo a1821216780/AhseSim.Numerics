@@ -26,7 +26,6 @@ The recommended way to get AHSEsim Numerics is to use NuGet. The following packa
 Core Package:
 
 - **AHSEsim.Numerics**
-- **AHSEsim.Numerics.FSharp** - optional extensions for a better F# experience. BigRational.
 
 Intel MKL Provider (optional):
 
