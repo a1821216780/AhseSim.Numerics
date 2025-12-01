@@ -11,7 +11,7 @@ AHSEsim Numerics is covered under the terms of the [MIT license](LICENSE.md). Yo
 
 ### Current Version
 
-![AHSEsim Numerics Version](https://buildstats.info/nuget/AHSEsim.Numerics) AHSEsim Numerics
+![AHSEsim Numerics Version](https://buildstats.info/nuget/AhseSim.Numerics) AHSEsim Numerics
 
 ![MKL Native Provider Version](https://buildstats.info/nuget/AHSEsim.Numerics.MKL.Win_x64) MKL Native Provider
 
