@@ -9,9 +9,9 @@
         <PackageId>AhseSim.Numerics</PackageId>
         <PackageId Condition="'$(StrongName)'=='True'">AHSEsim.Numerics.Signed</PackageId>
         <VersionPrefix>6.0.2</VersionPrefix>
-        <VersionSuffix>beta1</VersionSuffix>
+        <VersionSuffix>beta3</VersionSuffix>
         <Title>AhseSim Numerics$(TitleSuffix)</Title>
-        <Description>AHSEsim.Numerics.AHSEsim Numerics is the numerical foundation of the AHSEsim project, aiming to provide methods and algorithms for numerical computations in science, engineering and every day use. Supports .NET 8.0 or .NET 9.0, on Windows, Linux and Mac.$(DescriptionSuffix)</Description>
+        <Description>AHSEsim.Numerics 作为风力机气动-水动力-伺服-弹性仿真软件AHSEsim的基础数学框架，适用于工程技术人员的c#线性代数库。该库基与Mathnet库开发，并增加更多的特性和MKL支持</Description>
         <PackageTags>math numeric statistics probability integration interpolation regression solve fit linear algebra matrix fft</PackageTags>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
@@ -21,9 +21,11 @@
         <Company>AhseSim@copyright 赵子祯</Company>
         <Product>AhseSim.Numerics</Product>
         <PackageProjectUrl>http://www.openwecd.fun/</PackageProjectUrl>
-        <Copyright>Copyright AHSEsim.Numerics Project</Copyright>
+        <Copyright>赵子祯,zzz</Copyright>
         <Authors>赵子祯, Christoph Ruegg, Marcus Cuda, Jurgen Van Gael</Authors>
         <Version>$(TitleSuffix)</Version>
+        <RepositoryUrl>https://github.com/a1821216780/AhseSim.Numerics</RepositoryUrl>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net9.0|AnyCPU'">
       <IsAotCompatible>True</IsAotCompatible>
@@ -64,5 +66,11 @@
     </ItemGroup>
     <ItemGroup>
       <Folder Include="LinearAlgebra\Int\" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="..\..\..\AHSEsim\docs\README.md">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
     </ItemGroup>
 </Project>

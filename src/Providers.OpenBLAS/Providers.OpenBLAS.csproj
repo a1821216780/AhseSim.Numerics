@@ -9,12 +9,13 @@
         <IsPackable>true</IsPackable>
         <PackageId>AhseSim.Numerics.Providers.OpenBLAS</PackageId>
         <PackageId Condition="'$(StrongName)'=='True'">AHSEsim.Numerics.Providers.OpenBLAS.Signed</PackageId>
-        <VersionPrefix>6.0.1</VersionPrefix>
-        <VersionSuffix>beta1</VersionSuffix>
+        <VersionPrefix>6.0.2</VersionPrefix>
+        <VersionSuffix>beta3</VersionSuffix>
         <Title>AhseSim Numerics OpenBLAS Provider$(TitleSuffix)</Title>
-        <Description>AHSEsim Numerics is the numerical foundation of the AHSEsim project, aiming to provide methods and algorithms for numerical computations in science, engineering and every day use.$(DescriptionSuffix)</Description>
-        <PackageReleaseNotes>attempt to revive this project with upgraded tooling, for net8.0, net6.0, net48 and netstandard2.0
-many contributions, proper release notes with attributions will follow. thank you all!</PackageReleaseNotes>
+        <Description>AHSEsim.Numerics 作为风力机气动-水动力-伺服-弹性仿真软件AHSEsim的基础数学框架，适用于工程技术人员的c#线性代数库。该库基与Mathnet库开发，并增加更多的特性和MKL支持</Description>
+        <PackageReleaseNotes>### 6.0.1-beta2 - 2025-11-30
+
+* New OpenBlas binary</PackageReleaseNotes>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
         <NoWarn>1701;1702;1705;1591;1573</NoWarn>
@@ -23,6 +24,11 @@ many contributions, proper release notes with attributions will follow. thank yo
         <Product>AhseSim.Numerics</Product>
         <ApplicationIcon>hawtc.ico</ApplicationIcon>
         <Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+        <Copyright>赵子祯, zzz</Copyright>
+        <PackageProjectUrl>https://github.com/a1821216780/AhseSim.Numerics</PackageProjectUrl>
+        <PackageReadmeFile>RELEASENOTES-OpenBLAS.md</PackageReadmeFile>
+        <RepositoryUrl>https://github.com/a1821216780/AhseSim.Numerics</RepositoryUrl>
+        <NeutralLanguage>zh-Hans</NeutralLanguage>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\Numerics\Numerics.csproj" />
@@ -44,5 +50,11 @@ many contributions, proper release notes with attributions will follow. thank yo
     </ItemGroup>
     <ItemGroup>
       <Content Include="hawtc.ico" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="..\..\RELEASENOTES-OpenBLAS.md">
+        <Pack>True</Pack>
+        <PackagePath>\</PackagePath>
+      </None>
     </ItemGroup>
 </Project>

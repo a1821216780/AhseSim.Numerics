@@ -13,11 +13,8 @@
         <VersionSuffix>beta3</VersionSuffix>
         <Title>AhseSim Numerics MKL Provider$(TitleSuffix)</Title>
         <Description>AHSEsim.Numerics 作为风力机气动-水动力-伺服-弹性仿真软件AHSEsim的基础数学框架，适用于工程技术人员的c#线性代数库。该库基与Mathnet库开发，并增加更多的特性和MKL支持</Description>
-        <PackageReleaseNotes>### 6.0.0 - 2025-11-30
-
-* New binary names and package structure with runtime folders
-* With Intel oneAPI 2025.3
-* Note that AHSEsim.Numerics.Providers.MKL.dll is required for this to work with AHSEsim.Numerics v6</PackageReleaseNotes>
+        <PackageReleaseNotes>attempt to revive this project with upgraded tooling, for net8.0, net6.0, net48 and netstandard2.0
+many contributions, proper release notes with attributions will follow. thank you all!</PackageReleaseNotes>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
         <NoWarn>1701;1702;1705;1591;1573</NoWarn>
@@ -28,16 +25,14 @@
         <ApplicationIcon>hawtc.ico</ApplicationIcon>
         <Version>$(VersionPrefix)-$(VersionSuffix)</Version>
         <PackageProjectUrl>https://github.com/a1821216780/AhseSim.Numerics</PackageProjectUrl>
-        <PackageReadmeFile>RELEASENOTES-MKL.md</PackageReadmeFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/a1821216780/AhseSim.Numerics</RepositoryUrl>
-        <NeutralLanguage>zh-CN</NeutralLanguage>
-        <Copyright>赵子祯, zzz</Copyright>
     </PropertyGroup>
     <ItemGroup>
       <Content Include="hawtc.ico" />
     </ItemGroup>
     <ItemGroup>
-      <None Include="..\..\RELEASENOTES-MKL.md">
+      <None Include="..\..\..\AHSEsim\docs\README.md">
         <Pack>True</Pack>
         <PackagePath>\</PackagePath>
       </None>
