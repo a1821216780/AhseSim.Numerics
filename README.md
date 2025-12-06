@@ -11,7 +11,7 @@ AHSEsim Numerics is covered under the terms of the [MIT license](LICENSE.md). Yo
 
 ### Current Version
 
-![AHSEsim Numerics Version](https://buildstats.info/nuget/AHSEsim.Numerics) AHSEsim Numerics
+![AHSEsim Numerics Version](https://buildstats.info/nuget/AhseSim.Numerics) AHSEsim Numerics
 
 ![MKL Native Provider Version](https://buildstats.info/nuget/AHSEsim.Numerics.MKL.Win_x64) MKL Native Provider
 
@@ -21,19 +21,21 @@ AHSEsim Numerics is covered under the terms of the [MIT license](LICENSE.md). Yo
 Installation Instructions
 -------------------------
 
-The recommended way to get AHSEsim Numerics is to use NuGet. The following packages are provided and maintained in the public [NuGet Gallery](https://nuget.org/profiles/mathnet/).
+The recommended way to get AHSEsim Numerics is to use NuGet. The following packages are provided and maintained in the public [NuGet Gallery](https://nuget.org/profiles/a1821216780/).
 
 Core Package:
 
 - **AHSEsim.Numerics**
-- **AHSEsim.Numerics.FSharp** - optional extensions for a better F# experience. BigRational.
 
 Intel MKL Provider (optional):
 
-- **AHSEsim.Numerics.Providers.MKL** - Binding to Native Intel MKL provider.
-- **AHSEsim.Numerics.MKL.Win** - Native Intel MKL provider (Windows).
-- **AHSEsim.Numerics.MKL.Win-x86** - Native Intel MKL provider (Windows/32-bit only).
-- **AHSEsim.Numerics.MKL.Win-x64** - Native Intel MKL provider (Windows/64-bit only).
+- ** AHSEsim.Numerics.MKL.Win-x64 ** - Native Intel MKL provider (Windows/64-bit only).
+ if you use MathNet rather than AHSEsim.Numerics,you could also use AHSEsim.Numerics.MKL.Win-x64,and after build ,you should change the MKL dll file name "libNumericsMKL" to "libMathNetNumericsMKL"
+
+OpenBLAS Provider (optional):
+
+- ** AHSEsim.Numerics.OpenBLAS.Win-x64 ** - Native Intel MKL provider (Windows/64-bit only).
+- if you use MathNet rather than AHSEsim.Numerics,you could also use AHSEsim.Numerics.OpenBLAS.Win-x64,and after build ,you should change the MKL dll file name "libNumericsOpenBLAS" to "libMathNetNumericsOpenBLAS"
 
 Data/IO Packages for reading and writing data (optional):
 
@@ -52,7 +54,6 @@ Supported Platforms:
 Building AHSEsim Numerics
 -------------------------
 
-Windows (.NET): [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/79j22c061saisces/branch/master)](https://ci.appveyor.com/project/cdrnet/mathnet-numerics)
 
 You can build AHSEsim Numerics with an IDE like VisualStudio or JetBrains Rider, with MsBuild, .NET CLI tools or with FAKE (recommended).
 
