@@ -71,7 +71,7 @@ namespace AHSEsim.Numerics.Providers.MKL
         internal static extern int disable_fast_mm();
 
         [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern long mem_stat([Out]out int allocatedBuffers);
+        internal static extern long mem_stat([Out] out int allocatedBuffers);
 
         [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
         internal static extern long peak_mem_usage(int mode);
@@ -452,6 +452,63 @@ namespace AHSEsim.Numerics.Providers.MKL
 
         #endregion Direct Sparse Solver
 
+        #region AHSEsim当中添加的稠密矩阵与稀疏矩阵操作方法
+
+        // 稀疏矩阵 * 稠密矩阵
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sparse_d_create_csr(int m, int k, int n, double[] values,
+            int[] rowIndex, int[] columns, int nnz, double[] denseB, [In, Out] double[] resultC);
+
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sparse_s_create_csr(int m, int k, int n, float[] values,
+            int[] rowIndex, int[] columns, int nnz, float[] denseB, [In, Out] float[] resultC);
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sparse_c_create_csr(int m, int k, int n, Complex32[] values,
+            int[] rowIndex, int[] columns, int nnz, Complex32[] denseB, [In, Out] Complex32[] resultC);
+
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sparse_z_create_csr(int m, int k, int n, Complex[] values,
+            int[] rowIndex, int[] columns, int nnz, Complex[] denseB, [In, Out] Complex[] resultC);
+
+
+        // 稠密矩阵 * 稀疏矩阵
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_dDenseSparseMultiply(int m, int k, int n,
+            double[] denseA, double[] values, int[] rowIndex, int[] columns, int nnz, [In, Out] double[] resultC);
+
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sDenseSparseMultiply(int m, int k, int n,
+            float[] denseA, float[] values, int[] rowIndex, int[] columns, int nnz, [In, Out] float[] resultC);
+
+        // 稀疏矩阵 * 稠密向量
+
+
+
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sparse_d_mv(int m, int n, double[] values,
+            int[] rowIndex, int[] columns, int nnz, double[] denseVector, [In, Out] double[] resultVector);
+
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sparse_s_mv(int m, int n, float[] values,
+            int[] rowIndex, int[] columns, int nnz, float[] denseVector, [In, Out] float[] resultVector);
+
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sparse_c_mv(int m, int n, Complex32[] values,
+            int[] rowIndex, int[] columns, int nnz, Complex32[] denseVector, [In, Out] Complex32[] resultVector);
+
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int sp_mkl_sparse_c_mv(int m, int n, Complex[] values,
+            int[] rowIndex, int[] columns, int nnz, Complex[] denseVector, [In, Out] Complex[] resultVector);
+        #endregion AHSEsim当中添加的稠密矩阵与稀疏矩阵操作方法
         // ReSharper restore InconsistentNaming
     }
 }
