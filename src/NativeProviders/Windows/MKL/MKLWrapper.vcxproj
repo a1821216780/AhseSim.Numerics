@@ -196,6 +196,7 @@
     <ClCompile Include="..\..\MKL\memory.c" />
     <ClCompile Include="..\..\MKL\vector_functions.c" />
     <ClCompile Include="..\..\MKL\fft.cpp" />
+    <ClCompile Include="spare.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\lapack_common.h" />
@@ -204,6 +205,7 @@
     <ClInclude Include="..\..\MKL\lapack.h" />
     <ClInclude Include="..\..\MKL\resource.h" />
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="spare.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

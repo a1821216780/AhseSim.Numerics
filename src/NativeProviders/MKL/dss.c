@@ -1,5 +1,6 @@
 #include "wrapper_common.h"
 #include "dss.h"
+#include <mkl_spblas.h>
 
 #if __cplusplus
 extern "C" {
@@ -146,6 +147,8 @@ extern "C" {
         error = dss_delete(handle, opt);
         return error;
     }
+
+
 
 #if __cplusplus
 }

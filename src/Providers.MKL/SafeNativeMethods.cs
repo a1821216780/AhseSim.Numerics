@@ -449,6 +449,7 @@ namespace AHSEsim.Numerics.Providers.MKL
             int rowCount, int columnCount, int nonZerosCount, int[] rowPointers, int[] columnIndices, Complex[] values,
             int nRhs, [In, Out] Complex[] rhs, [In, Out] Complex[] solution);
 
+
         #endregion Direct Sparse Solver
 
         // ReSharper restore InconsistentNaming
