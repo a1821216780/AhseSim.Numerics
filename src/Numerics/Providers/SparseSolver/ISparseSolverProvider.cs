@@ -448,7 +448,63 @@ namespace AHSEsim.Numerics.Providers.SparseSolver
     public interface ISparseSolverProvider<T>
         where T : struct
     {
+        /// <summary>
+        /// Solves a sparse linear system using the specified matrix structure, type, and system configuration.MKL当中的DSS函数
+        /// </summary>
+        /// <remarks>The input arrays must be properly sized and formatted according to the matrix
+        /// structure and type. The method does not modify the input matrix or right-hand side arrays. The solution is
+        /// written to the provided solution array. This method is not thread-safe and should not be called concurrently
+        /// on the same data.</remarks>
+        /// <param name="matrixStructure">The structure of the sparse matrix, indicating how the matrix data is organized (for example, compressed row
+        /// or column format).</param>
+        /// <param name="matrixType">The type of the matrix, such as symmetric or general, which determines the solver's approach.</param>
+        /// <param name="systemType">The type of linear system to solve, such as a standard or transposed system.</param>
+        /// <param name="rows">The number of rows in the matrix. Must be greater than zero.</param>
+        /// <param name="cols">The number of columns in the matrix. Must be greater than zero.</param>
+        /// <param name="nnz">The number of nonzero elements in the matrix. Must be non-negative and correspond to the length of the
+        /// nonzero value arrays.</param>
+        /// <param name="rowIdx">An array containing the row indices of nonzero elements, formatted according to the specified matrix
+        /// structure. Cannot be null.</param>
+        /// <param name="colPtr">An array containing the column pointers or indices, depending on the matrix structure. Cannot be null.</param>
+        /// <param name="values">An array containing the nonzero values of the matrix. The length must match the number of nonzero elements.
+        /// Cannot be null.</param>
+        /// <param name="nRhs">The number of right-hand sides to solve for. Must be greater than zero.</param>
+        /// <param name="rhs">An array containing the right-hand side vectors for the system. The length must be compatible with the
+        /// number of rows and right-hand sides. Cannot be null.</param>
+        /// <param name="solution">An array to receive the computed solution vectors. The length must be compatible with the number of columns
+        /// and right-hand sides. Cannot be null.</param>
+        /// <returns>A DssStatus value indicating the result of the solve operation. Returns a status code representing success
+        /// or the type of failure encountered.</returns>
         DssStatus Solve(DssMatrixStructure matrixStructure, DssMatrixType matrixType, DssSystemType systemType, int rows, int cols, int nnz, int[] rowIdx, int[] colPtr, T[] values, int nRhs, T[] rhs, T[] solution);
+
+        /// <summary>
+        /// Solves a system of linear equations using the specified sparse matrix representation and system,MKL当中的PARDISO求解
+        /// configuration.
+        /// </summary>
+        /// <remarks>The input arrays must be properly sized and populated according to the specified
+        /// matrix structure and type. The method does not modify the input matrix or right-hand side arrays. The
+        /// solution array is overwritten with the computed results. Thread safety is not guaranteed; concurrent calls
+        /// require external synchronization.</remarks>
+        /// <param name="matrixStructure">The structure of the sparse matrix, indicating how the matrix data is organized (e.g., compressed row
+        /// storage).</param>
+        /// <param name="matrixType">The type of the matrix, such as symmetric or general, which may affect the solution method.</param>
+        /// <param name="systemType">The type of system to solve, such as a single or multiple right-hand sides.</param>
+        /// <param name="rows">The number of rows in the matrix. Must be greater than zero.</param>
+        /// <param name="nnz">The number of nonzero elements in the matrix. Must be non-negative and correspond to the length of the
+        /// nonzero value arrays.</param>
+        /// <param name="rowptr">An array of row pointers that defines the start of each row in the sparse matrix structure. The length
+        /// should be rows + 1.</param>
+        /// <param name="colIdx">An array containing the column indices for each nonzero element in the matrix. The length should be equal to
+        /// nnz.</param>
+        /// <param name="values">An array containing the nonzero values of the matrix. The length should be equal to nnz.</param>
+        /// <param name="nRhs">The number of right-hand sides to solve for. Must be greater than zero.</param>
+        /// <param name="rhs">An array containing the right-hand side vectors for the system. The length should be compatible with rows
+        /// and nRhs.</param>
+        /// <param name="solution">An array that will be populated with the computed solution vectors. The length should be compatible with
+        /// rows and nRhs.</param>
+        /// <returns>A DssStatus value indicating the outcome of the solve operation. Returns Success if the system is solved;
+        /// otherwise, returns an error status describing the failure.</returns>
+        DssStatus Solve(DssMatrixStructure matrixStructure, DssMatrixType matrixType, int rows, int cols, int nnz, int[] rowptr, int[] colIdx, T[] values, int nRhs, T[] rhs, T[] solution);
     }
 }
 

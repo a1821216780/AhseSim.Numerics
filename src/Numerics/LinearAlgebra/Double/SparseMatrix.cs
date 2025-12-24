@@ -33,6 +33,7 @@ using System.Diagnostics;
 using System.Linq;
 using AHSEsim.Numerics.LinearAlgebra.Storage;
 using AHSEsim.Numerics.Providers.LinearAlgebra;
+using AHSEsim.Numerics.Providers.SparseSolver;
 
 namespace AHSEsim.Numerics.LinearAlgebra.Double
 {
@@ -679,7 +680,7 @@ namespace AHSEsim.Numerics.LinearAlgebra.Double
         /// <returns>The square root of the sum of the squared values.</returns>
         public override double FrobeniusNorm()
         {
-            var aat = (SparseCompressedRowMatrixStorage<double>) (this*Transpose()).Storage;
+            var aat = (SparseCompressedRowMatrixStorage<double>)(this * Transpose()).Storage;
             var aatRowPointers = aat.RowPointers;
             var aatColumnIndices = aat.ColumnIndices;
             var aatValues = aat.Values;
@@ -907,12 +908,12 @@ namespace AHSEsim.Numerics.LinearAlgebra.Double
                 var diagonal = diagonalOther.Data;
                 if (other.ColumnCount == other.RowCount)
                 {
-                    Storage.MapIndexedTo(result.Storage, (_, j, x) => x*diagonal[j], Zeros.AllowSkip, ExistingData.Clear);
+                    Storage.MapIndexedTo(result.Storage, (_, j, x) => x * diagonal[j], Zeros.AllowSkip, ExistingData.Clear);
                 }
                 else
                 {
                     result.Storage.Clear();
-                    Storage.MapSubMatrixIndexedTo(result.Storage, (_, j, x) => x*diagonal[j], 0, 0, RowCount, 0, 0, Math.Min(ColumnCount, other.ColumnCount), Zeros.AllowSkip, ExistingData.AssumeZeros);
+                    Storage.MapSubMatrixIndexedTo(result.Storage, (_, j, x) => x * diagonal[j], 0, 0, RowCount, 0, 0, Math.Min(ColumnCount, other.ColumnCount), Zeros.AllowSkip, ExistingData.AssumeZeros);
                 }
                 return;
             }
@@ -1205,7 +1206,7 @@ namespace AHSEsim.Numerics.LinearAlgebra.Double
                 var endIndex = rowPointers[i + 1];
                 for (var j = rowPointers[i]; j < endIndex; j++)
                 {
-                    var resVal = values[j]*other.At(i, columnIndices[j]);
+                    var resVal = values[j] * other.At(i, columnIndices[j]);
                     if (resVal != 0d)
                     {
                         result.At(i, columnIndices[j], resVal);
@@ -1237,7 +1238,7 @@ namespace AHSEsim.Numerics.LinearAlgebra.Double
                 {
                     if (values[j] != 0d)
                     {
-                        result.At(i, columnIndices[j], values[j]/divisor.At(i, columnIndices[j]));
+                        result.At(i, columnIndices[j], values[j] / divisor.At(i, columnIndices[j]));
                     }
                 }
             }
@@ -1255,7 +1256,7 @@ namespace AHSEsim.Numerics.LinearAlgebra.Double
                 throw new ArgumentNullException(nameof(result));
             }
 
-            if (result.RowCount != (RowCount*other.RowCount) || result.ColumnCount != (ColumnCount*other.ColumnCount))
+            if (result.RowCount != (RowCount * other.RowCount) || result.ColumnCount != (ColumnCount * other.ColumnCount))
             {
                 throw DimensionsDontMatch<ArgumentOutOfRangeException>(this, other, result);
             }
@@ -1271,7 +1272,7 @@ namespace AHSEsim.Numerics.LinearAlgebra.Double
                 {
                     if (values[j] != 0d)
                     {
-                        result.SetSubMatrix(i*other.RowCount, other.RowCount, columnIndices[j]*other.ColumnCount, other.ColumnCount, values[j]*other);
+                        result.SetSubMatrix(i * other.RowCount, other.RowCount, columnIndices[j] * other.ColumnCount, other.ColumnCount, values[j] * other);
                     }
                 }
             }
@@ -1584,7 +1585,171 @@ namespace AHSEsim.Numerics.LinearAlgebra.Double
 
         public override string ToTypeString()
         {
-            return FormattableString.Invariant($"SparseMatrix {RowCount}x{ColumnCount}-Double {NonZerosCount / (RowCount * (double) ColumnCount):P2} Filled");
+            return FormattableString.Invariant($"SparseMatrix {RowCount}x{ColumnCount}-Double {NonZerosCount / (RowCount * (double)ColumnCount):P2} Filled");
         }
+
+        #region 自定义函数
+
+        /// <summary>
+        /// Solves a system of linear equations, <b>Ax = b</b>, with A QR factorized.
+        /// </summary>
+        /// <param name="input">The right hand side vector, <b>b</b>.</param>
+        /// <param name="result">The left hand side <see cref="Matrix{T}"/>, <b>x</b>.</param>
+        public void DSSSolve(double[] input, double[] result)
+        {
+            var storage = this.Storage as SparseCompressedRowMatrixStorage<double>;
+            var rowCount = storage.RowCount;
+            var columnCount = storage.ColumnCount;
+            var valueCount = storage.ValueCount;
+            var values = storage.Values;
+            var rowPointers = storage.RowPointers;
+            var columnIndices = storage.ColumnIndices;
+
+            SparseSolverControl.Provider.Solve(DssMatrixStructure.Nonsymmetric, DssMatrixType.Indefinite, DssSystemType.DontTranspose,
+                   rowCount, columnCount, valueCount, rowPointers, columnIndices, values,
+                   1, input, result);
+        }
+
+        /// <summary>
+        /// Solves a system of linear equations, <b>Ax = b</b>, with A QR factorized.
+        /// </summary>
+        /// <param name="input">The right hand side vector, <b>b</b>.</param>
+        /// <param name="result">The left hand side <see cref="Matrix{T}"/>, <b>x</b>.</param>
+        public double[] DSSSolve(double[] input)
+        {
+            var result = new double[input.Length];
+            DSSSolve(input, result);
+            return result;
+        }
+
+
+        /// <summary>
+        /// Solves a system of linear equations using the PARDISO solver with the current sparse matrix and the
+        /// specified input vector.
+        /// </summary>
+        /// <remarks>This method uses the PARDISO solver to compute the solution for the system defined by
+        /// the current matrix and the provided input vector. The input and result arrays must not be null. The method
+        /// overwrites the contents of the result array with the computed solution.</remarks>
+        /// <param name="input">The input vector representing the right-hand side of the linear system. The length must match the number of
+        /// rows in the matrix.</param>
+        /// <param name="result">An array that receives the computed solution vector. The length must match the number of columns in the
+        /// matrix.</param>
+        public void PARDISOSolve(double[] input, double[] result)
+        {
+            var storage = this.Storage as SparseCompressedRowMatrixStorage<double>;
+            var rowCount = storage.RowCount;
+            var columnCount = storage.ColumnCount;
+            var valueCount = storage.ValueCount;
+            var values = storage.Values;
+            var rowPointers = storage.RowPointers;
+            var columnIndices = storage.ColumnIndices;
+            SparseSolverControl.Provider.Solve(DssMatrixStructure.Nonsymmetric, DssMatrixType.Indefinite,
+rowCount, columnCount, valueCount, rowPointers, columnIndices, values,
+1, input, result);
+        }
+
+
+        /// <summary>
+        /// Solves a system of linear equations using the PARDISO solver with the current sparse matrix and the
+        /// specified input vector.
+        /// </summary>
+        /// <remarks>This method uses the PARDISO solver to compute the solution for the system defined by
+        /// the current matrix and the provided input vector. The input and result arrays must not be null. The method
+        /// overwrites the contents of the result array with the computed solution.</remarks>
+        /// <param name="input">The input vector representing the right-hand side of the linear system. The length must match the number of
+        /// rows in the matrix.</param>
+        /// <param name="result">An array that receives the computed solution vector. The length must match the number of columns in the
+        /// matrix.</param>
+        public double[]  PARDISOSolve(double[] input)
+        {
+            var result = new double[input.Length];
+            PARDISOSolve(input, result);
+            return result;
+        }
+
+
+        /// <summary>
+        /// Solves a system of linear equations, <b>AX = B</b>, with A QR factorized.
+        /// </summary>
+        /// <param name="input">The right hand side <see cref="Matrix{T}"/>, <b>B</b>.</param>
+        /// <param name="result">The left hand side <see cref="Matrix{T}"/>, <b>X</b>.</param>
+        public void DSSSolve(Matrix<double> input, Matrix<double> result)
+        {
+            var storage = this.Storage as SparseCompressedRowMatrixStorage<double>;
+            var rowCount = storage.RowCount;
+            var columnCount = storage.ColumnCount;
+            var valueCount = storage.ValueCount;
+            var values = storage.Values;
+            var rowPointers = storage.RowPointers;
+            var columnIndices = storage.ColumnIndices;
+
+            var solution = new double[rowCount];
+
+            for (int j = 0; j < input.ColumnCount; j++)
+            {
+                // 准备结果向量
+                var rhs = input.Column(j).ToArray();
+                SparseSolverControl.Provider.Solve(DssMatrixStructure.Nonsymmetric, DssMatrixType.Indefinite, DssSystemType.DontTranspose,
+                   rowCount, columnCount, valueCount, rowPointers, columnIndices, values,
+                   1, rhs, solution);
+                // 准备结果向量
+                result.SetColumn(j, solution);
+            }
+        }
+
+
+        /// <summary>
+        /// Solves a system of linear equations, <b>AX = B</b>, with A QR factorized.
+        /// </summary>
+        /// <param name="input">The right hand side <see cref="Matrix{T}"/>, <b>B</b>.</param>
+        /// <param name="result">The left hand side <see cref="Matrix{T}"/>, <b>X</b>.</param>
+        public Matrix<double> DSSSolve(Matrix<double> input)
+        {
+            var result = Matrix<double>.Build.Dense(this.RowCount, input.ColumnCount);
+            DSSSolve(input, result);
+            return result;
+
+        }
+        /// <summary>
+        /// Solves a system of linear equations, <b>AX = B</b>, with A QR factorized.
+        /// </summary>
+        /// <param name="input">The right hand side <see cref="Matrix{T}"/>, <b>B</b>.</param>
+        /// <param name="result">The left hand side <see cref="Matrix{T}"/>, <b>X</b>.</param>
+        public void PARDISOSolve(Matrix<double> input, Matrix<double> result)
+        {
+            var storage = this.Storage as SparseCompressedRowMatrixStorage<double>;
+            var rowCount = storage.RowCount;
+            var columnCount = storage.ColumnCount;
+            var valueCount = storage.ValueCount;
+            var values = storage.Values;
+            var rowPointers = storage.RowPointers;
+            var columnIndices = storage.ColumnIndices;
+
+            var solution = new double[rowCount];
+
+            for (int j = 0; j < input.ColumnCount; j++)
+            {
+                // 准备结果向量
+                var rhs = input.Column(j).ToArray();
+                SparseSolverControl.Provider.Solve(DssMatrixStructure.Nonsymmetric, DssMatrixType.Indefinite,
+   rowCount, columnCount, valueCount, rowPointers, columnIndices, values,
+   1, rhs, solution);
+                // 准备结果向量
+                result.SetColumn(j, solution);
+            }
+        }
+
+        /// <summary>
+        /// Solves a system of linear equations, <b>AX = B</b>, with A QR factorized.
+        /// </summary>
+        /// <param name="input">The right hand side <see cref="Matrix{T}"/>, <b>B</b>.</param>
+        /// <param name="result">The left hand side <see cref="Matrix{T}"/>, <b>X</b>.</param>
+        public Matrix<double> PARDISOSolve(Matrix<double> input)
+        {
+            var result = Matrix<double>.Build.Dense(this.RowCount, input.ColumnCount);
+            PARDISOSolve(input, result);
+            return result;
+        }
+        #endregion
     }
 }

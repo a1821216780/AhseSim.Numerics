@@ -28,6 +28,7 @@
 // </copyright>
 
 using AHSEsim.Numerics.LinearAlgebra.Storage;
+using AHSEsim.Numerics.Providers.SparseSolver;
 using AHSEsim.Numerics.Threading;
 using System;
 using System.Collections.Generic;
@@ -2836,6 +2837,8 @@ namespace AHSEsim.Numerics.LinearAlgebra
         {
             return Storage.Find2(other.Storage, (x, y) => !predicate(x, y), zeros) == null;
         }
+
+
     }
 
     internal class MatrixDebuggingView<T>

@@ -508,6 +508,51 @@ namespace AHSEsim.Numerics.Providers.MKL
         [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int sp_mkl_sparse_c_mv(int m, int n, Complex[] values,
             int[] rowIndex, int[] columns, int nnz, Complex[] denseVector, [In, Out] Complex[] resultVector);
+
+        /// <summary>
+        /// 双精度实数稀疏矩阵求解器
+        /// </summary>
+        /// <param name="matrixStructure">矩阵结构类型（对称性）</param>
+        /// <param name="matrixType">矩阵类型</param>
+        /// <param name="nRows">矩阵行数</param>
+        /// <param name="nnz">非零元素个数</param>
+        /// <param name="rowPtr">CSR行指针数组</param>
+        /// <param name="colIdx">CSR列索引数组</param>
+        /// <param name="values">非零元素值数组</param>
+        /// <param name="nRhs">右端向量个数</param>
+        /// <param name="rhsValues">右端向量数组</param>
+        /// <param name="solValues">解向量数组（输出）</param>
+        /// <returns>错误代码（0=成功）</returns>
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sp_pardiso_d_solve(int matrixStructure,int matrixType,int nRows,
+            int nnz,int[] rowPtr,int[] colIdx,double[] values,int nRhs,double[] rhsValues,[In,Out] double[] solValues);
+
+
+
+        /// <summary>
+        /// 单精度实数稀疏矩阵求解器
+        /// </summary>
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sp_pardiso_s_solve(int matrixStructure,int matrixType,int nRows,
+            int nnz,int[] rowPtr,int[] colIdx,float[] values,int nRhs,float[] rhsValues,[In,Out] float[] solValues);
+
+
+        /// <summary>
+        /// 单精度复数稀疏矩阵求解器
+        /// </summary>
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sp_pardiso_c_solve(int matrixStructure,int matrixType,int nRows,
+            int nnz,int[] rowPtr,int[] colIdx,Complex32[] values,int nRhs, Complex32[] rhsValues,[Out] Complex32[] solValues);
+
+
+
+        /// <summary>
+        /// 双精度复数稀疏矩阵求解器
+        /// </summary>
+        [DllImport(DllName, ExactSpelling = true, SetLastError = false, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int sp_pardiso_z_solve(int matrixStructure, int matrixType, int nRows,
+            int nnz, int[] rowPtr, int[] colIdx, Complex[] values, int nRhs, Complex[] rhsValues, [Out] Complex[] solValues);
+
         #endregion AHSEsim当中添加的稠密矩阵与稀疏矩阵操作方法
         // ReSharper restore InconsistentNaming
     }

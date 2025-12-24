@@ -76,5 +76,56 @@ namespace AHSEsim.Numerics.Providers.MKL.SparseSolver
                 nRhs, rhs, solution);
             return (DssStatus)error;
         }
+
+        [SecuritySafeCritical]
+        public DssStatus Solve(DssMatrixStructure matrixStructure, DssMatrixType matrixType,
+          int rowCount, int columnCount, int nonZerosCount, int[] rowPointers, int[] columnIndices, Complex[] values,
+          int nRhs, Complex[] rhs, Complex[] solution)
+        {
+            if (rowCount != columnCount)
+            {
+                throw new ArgumentException("Matrix must be symmetric.");
+            }
+
+            if (rowPointers == null)
+            {
+                throw new ArgumentNullException(nameof(rowPointers));
+            }
+
+            if (columnIndices == null)
+            {
+                throw new ArgumentNullException(nameof(columnIndices));
+            }
+
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (rhs == null)
+            {
+                throw new ArgumentNullException(nameof(rhs));
+            }
+
+            if (solution == null)
+            {
+                throw new ArgumentNullException(nameof(solution));
+            }
+
+            if (rowCount * nRhs != rhs.Length)
+            {
+                throw new ArgumentException("The array arguments must have the same length.", nameof(rhs));
+            }
+
+            if (columnCount * nRhs != solution.Length)
+            {
+                throw new ArgumentException("The array arguments must have the same length.", nameof(solution));
+            }
+
+            var error = SafeNativeMethods.sp_pardiso_z_solve((int)matrixStructure, (int)matrixType,
+                rowCount, nonZerosCount, rowPointers, columnIndices, values,
+                nRhs, rhs, solution);
+            return (DssStatus)error;
+        }
     }
 }

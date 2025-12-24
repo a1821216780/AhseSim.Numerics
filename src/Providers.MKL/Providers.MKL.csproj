@@ -10,7 +10,7 @@
         <PackageId>AhseSim.Numerics.Providers.MKL</PackageId>
         <PackageId Condition="'$(StrongName)'=='True'">AHSEsim.Numerics.Providers.MKL.Signed</PackageId>
         <VersionPrefix>6.0.2</VersionPrefix>
-        <VersionSuffix>beta3</VersionSuffix>
+        <VersionSuffix>beta4</VersionSuffix>
         <Title>AhseSim Numerics MKL Provider$(TitleSuffix)</Title>
         <Description>AHSEsim.Numerics 作为风力机气动-水动力-伺服-弹性仿真软件AHSEsim的基础数学框架，适用于工程技术人员的c#线性代数库。该库基与Mathnet库开发，并增加更多的特性和MKL支持</Description>
         <PackageReleaseNotes>### 6.0.0 - 2025-11-30

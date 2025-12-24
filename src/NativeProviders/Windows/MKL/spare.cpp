@@ -684,4 +684,444 @@ extern "C" {
             return -99;
         }
     }
+
+#include <stdio.h>
+#include "mkl_pardiso.h"
+#include "mkl_types.h"
+
+    DLLEXPORT MKL_INT sp_pardiso_d_solve(
+        const MKL_INT matrixStructure,  // 矩阵结构类型
+        const MKL_INT matrixType,       // 矩阵类型
+        const MKL_INT nRows,            // 矩阵行数
+        const MKL_INT nnz,              // 非零元素个数
+        const MKL_INT rowPtr[],         // CSR格式：行指针（大小：nRows+1）
+        const MKL_INT colIdx[],         // CSR格式：列索引
+        const double values[],          // 非零元素值
+        const MKL_INT nRhs,             // 右端向量个数
+        const double rhsValues[],       // 右端向量
+        double solValues[])             // 解向量（输出）
+    {
+        // PARDISO内部参数
+        void* pt[64] = { 0 };              // 内部求解器内存指针
+        MKL_INT iparm[64] = { 0 };         // PARDISO参数数组
+        MKL_INT maxfct = 1;        // 最大因子化数量
+        MKL_INT mnum = 1;          // 使用哪个因子化
+        MKL_INT mtype;             // 矩阵类型
+        MKL_INT phase;             // 求解阶段
+        MKL_INT n = nRows;         // 矩阵维度
+        MKL_INT nrhs = nRhs;       // 右端向量数量
+        MKL_INT msglvl = 0;        // 消息级别（0=无输出）
+        MKL_INT error = 0;         // 错误标志
+        MKL_INT idum;              // 虚拟变量
+        double ddum;               // 虚拟变量
+
+        // 设置矩阵类型
+        switch (matrixType) {
+        case 1:  // 实对称正定矩阵
+            mtype = 2;
+            break;
+        case 2:  // 实对称不定矩阵
+            mtype = -2;
+            break;
+        case 3:  // 实非对称矩阵
+            mtype = 11;
+            break;
+        case 4:  // 复Hermite正定矩阵
+            mtype = 4;
+            break;
+        case 5:  // 复Hermite不定矩阵
+            mtype = -4;
+            break;
+        case 6:  // 复对称矩阵
+            mtype = 6;
+            break;
+        case 7:  // 复非对称矩阵
+            mtype = 13;
+            break;
+        default:
+            mtype = 11; // 默认为非对称
+        }
+
+        // 配置PARDISO参数
+        iparm[0] = 1;   // 不使用求解器默认值
+        iparm[1] = 2;   // 使用METIS重排序
+        iparm[3] = 0;   // 不进行预处理
+        iparm[4] = 0;   // 不使用用户填充减少排列
+        iparm[5] = 0;   // 解写入x
+        iparm[7] = 2;   // 最大迭代精化步数
+        iparm[9] = 13;  // 透视阈值（10^-13）
+        iparm[10] = 1;  // 使用缩放（对称矩阵）
+        iparm[12] = 1;  // 使用匹配（非对称矩阵）
+        iparm[17] = -1; // 输出非零元素数量
+        iparm[18] = -1; // 输出MFlops
+        iparm[34] = 1;  // 使用从0开始的索引
+        iparm[36] = 0;  // CSR格式
+
+        // 阶段1：分析（符号分解）
+        phase = 11;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &ddum, &ddum, &error);
+
+        if (error != 0) {
+            printf("PARDISO分析阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+        // 阶段2：数值分解
+        phase = 22;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &ddum, &ddum, &error);
+
+        if (error != 0) {
+            printf("PARDISO分解阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+        // 阶段3：求解和迭代精化
+        phase = 33;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, (double*)rhsValues, solValues, &error);
+
+        if (error != 0) {
+            printf("PARDISO求解阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+    cleanup:
+        // 阶段-1：释放内存
+        phase = -1;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            &ddum, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &ddum, &ddum, &error);
+
+        return error;
+    }
+
+    DLLEXPORT MKL_INT sp_pardiso_s_solve(
+        const MKL_INT matrixStructure,  // 矩阵结构类型
+        const MKL_INT matrixType,       // 矩阵类型
+        const MKL_INT nRows,            // 矩阵行数
+        const MKL_INT nnz,              // 非零元素个数
+        const MKL_INT rowPtr[],         // CSR格式：行指针（大小：nRows+1）
+        const MKL_INT colIdx[],         // CSR格式：列索引
+        const float values[],           // 非零元素值
+        const MKL_INT nRhs,             // 右端向量个数
+        const float rhsValues[],        // 右端向量
+        float solValues[])              // 解向量（输出）
+    {
+        // PARDISO内部参数
+        void* pt[64] = { 0 };              // 内部求解器内存指针
+        MKL_INT iparm[64] = { 0 };         // PARDISO参数数组
+        MKL_INT maxfct = 1;        // 最大因子化数量
+        MKL_INT mnum = 1;          // 使用哪个因子化
+        MKL_INT mtype;             // 矩阵类型
+        MKL_INT phase;             // 求解阶段
+        MKL_INT n = nRows;         // 矩阵维度
+        MKL_INT nrhs = nRhs;       // 右端向量数量
+        MKL_INT msglvl = 0;        // 消息级别（0=无输出）
+        MKL_INT error = 0;         // 错误标志
+        MKL_INT idum;              // 虚拟变量
+        float sdum;                // 单精度虚拟变量
+
+        // 设置矩阵类型
+        switch (matrixType) {
+        case 1:  // 实对称正定矩阵
+            mtype = 2;
+            break;
+        case 2:  // 实对称不定矩阵
+            mtype = -2;
+            break;
+        case 3:  // 实非对称矩阵
+            mtype = 11;
+            break;
+        case 4:  // 复Hermite正定矩阵
+            mtype = 4;
+            break;
+        case 5:  // 复Hermite不定矩阵
+            mtype = -4;
+            break;
+        case 6:  // 复对称矩阵
+            mtype = 6;
+            break;
+        case 7:  // 复非对称矩阵
+            mtype = 13;
+            break;
+        default:
+            mtype = 11; // 默认为非对称
+        }
+
+        // 配置PARDISO参数
+        iparm[0] = 1;   // 不使用求解器默认值
+        iparm[1] = 2;   // 使用METIS重排序
+        iparm[3] = 0;   // 不进行预处理
+        iparm[4] = 0;   // 不使用用户填充减少排列
+        iparm[5] = 0;   // 解写入x
+        iparm[7] = 2;   // 最大迭代精化步数
+        iparm[9] = 13;  // 透视阈值（10^-13）
+        iparm[10] = 1;  // 使用缩放（对称矩阵）
+        iparm[12] = 1;  // 使用匹配（非对称矩阵）
+        iparm[17] = -1; // 输出非零元素数量
+        iparm[18] = -1; // 输出MFlops
+        iparm[34] = 1;  // 使用从0开始的索引
+        iparm[36] = 0;  // CSR格式
+
+        // 阶段1：分析（符号分解）
+        phase = 11;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &sdum, &sdum, &error);
+
+        if (error != 0) {
+            printf("PARDISO分析阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+        // 阶段2：数值分解
+        phase = 22;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &sdum, &sdum, &error);
+
+        if (error != 0) {
+            printf("PARDISO分解阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+        // 阶段3：求解和迭代精化
+        phase = 33;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, (float*)rhsValues, solValues, &error);
+
+        if (error != 0) {
+            printf("PARDISO求解阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+    cleanup:
+        // 阶段-1：释放内存
+        phase = -1;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            &sdum, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &sdum, &sdum, &error);
+
+        return error;
+    }
+
+    DLLEXPORT MKL_INT sp_pardiso_c_solve(
+        const MKL_INT matrixStructure,  // 矩阵结构类型
+        const MKL_INT matrixType,       // 矩阵类型
+        const MKL_INT nRows,            // 矩阵行数
+        const MKL_INT nnz,              // 非零元素个数
+        const MKL_INT rowPtr[],         // CSR格式：行指针（大小：nRows+1）
+        const MKL_INT colIdx[],         // CSR格式：列索引
+        const MKL_Complex8 values[],    // 非零元素值
+        const MKL_INT nRhs,             // 右端向量个数
+        const MKL_Complex8 rhsValues[], // 右端向量
+        MKL_Complex8 solValues[])       // 解向量（输出）
+    {
+        // PARDISO内部参数
+        void* pt[64] = { 0 };              // 内部求解器内存指针
+        MKL_INT iparm[64] = { 0 };         // PARDISO参数数组
+        MKL_INT maxfct = 1;        // 最大因子化数量
+        MKL_INT mnum = 1;          // 使用哪个因子化
+        MKL_INT mtype;             // 矩阵类型
+        MKL_INT phase;             // 求解阶段
+        MKL_INT n = nRows;         // 矩阵维度
+        MKL_INT nrhs = nRhs;       // 右端向量数量
+        MKL_INT msglvl = 0;        // 消息级别（0=无输出）
+        MKL_INT error = 0;         // 错误标志
+        MKL_INT idum;              // 虚拟变量
+        MKL_Complex8 cdum;         // 单精度复数虚拟变量
+
+        // 设置矩阵类型
+        switch (matrixType) {
+        case 1:  // 实对称正定矩阵（注意：复数函数不应处理实数矩阵）
+        case 2:  // 实对称不定矩阵
+        case 3:  // 实非对称矩阵
+            printf("错误：复数求解器不能用于实数矩阵类型\n");
+            return -1;
+        case 4:  // 复Hermite正定矩阵
+            mtype = 4;
+            break;
+        case 5:  // 复Hermite不定矩阵
+            mtype = -4;
+            break;
+        case 6:  // 复对称矩阵
+            mtype = 6;
+            break;
+        case 7:  // 复非对称矩阵
+            mtype = 13;
+            break;
+        default:
+            mtype = 13; // 默认为复非对称
+        }
+
+        // 配置PARDISO参数
+        iparm[0] = 1;   // 不使用求解器默认值
+        iparm[1] = 2;   // 使用METIS重排序
+        iparm[3] = 0;   // 不进行预处理
+        iparm[4] = 0;   // 不使用用户填充减少排列
+        iparm[5] = 0;   // 解写入x
+        iparm[7] = 2;   // 最大迭代精化步数
+        iparm[9] = 13;  // 透视阈值（10^-13）
+        iparm[10] = 1;  // 使用缩放（对称矩阵）
+        iparm[12] = 1;  // 使用匹配（非对称矩阵）
+        iparm[17] = -1; // 输出非零元素数量
+        iparm[18] = -1; // 输出MFlops
+        iparm[34] = 1;  // 使用从0开始的索引
+        iparm[36] = 0;  // CSR格式
+
+        // 阶段1：分析（符号分解）
+        phase = 11;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &cdum, &cdum, &error);
+
+        if (error != 0) {
+            printf("PARDISO分析阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+        // 阶段2：数值分解
+        phase = 22;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &cdum, &cdum, &error);
+
+        if (error != 0) {
+            printf("PARDISO分解阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+        // 阶段3：求解和迭代精化
+        phase = 33;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, (MKL_Complex8*)rhsValues, solValues, &error);
+
+        if (error != 0) {
+            printf("PARDISO求解阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+    cleanup:
+        // 阶段-1：释放内存
+        phase = -1;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            &cdum, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &cdum, &cdum, &error);
+
+        return error;
+    }
+
+    DLLEXPORT MKL_INT sp_pardiso_z_solve(
+        const MKL_INT matrixStructure,  // 矩阵结构类型
+        const MKL_INT matrixType,       // 矩阵类型
+        const MKL_INT nRows,            // 矩阵行数
+        const MKL_INT nnz,              // 非零元素个数
+        const MKL_INT rowPtr[],         // CSR格式：行指针（大小：nRows+1）
+        const MKL_INT colIdx[],         // CSR格式：列索引
+        const MKL_Complex16 values[],   // 非零元素值
+        const MKL_INT nRhs,             // 右端向量个数
+        const MKL_Complex16 rhsValues[], // 右端向量
+        MKL_Complex16 solValues[])       // 解向量（输出）
+    {
+        // PARDISO内部参数
+        void* pt[64] = { 0 };              // 内部求解器内存指针
+        MKL_INT iparm[64] = { 0 };         // PARDISO参数数组
+        MKL_INT maxfct = 1;        // 最大因子化数量
+        MKL_INT mnum = 1;          // 使用哪个因子化
+        MKL_INT mtype;             // 矩阵类型
+        MKL_INT phase;             // 求解阶段
+        MKL_INT n = nRows;         // 矩阵维度
+        MKL_INT nrhs = nRhs;       // 右端向量数量
+        MKL_INT msglvl = 0;        // 消息级别（0=无输出）
+        MKL_INT error = 0;         // 错误标志
+        MKL_INT idum;              // 虚拟变量
+        MKL_Complex16 zdum;        // 双精度复数虚拟变量
+
+        // 设置矩阵类型
+        switch (matrixType) {
+        case 1:  // 实对称正定矩阵（注意：复数函数不应处理实数矩阵）
+        case 2:  // 实对称不定矩阵
+        case 3:  // 实非对称矩阵
+            printf("错误：复数求解器不能用于实数矩阵类型\n");
+            return -1;
+        case 4:  // 复Hermite正定矩阵
+            mtype = 4;
+            break;
+        case 5:  // 复Hermite不定矩阵
+            mtype = -4;
+            break;
+        case 6:  // 复对称矩阵
+            mtype = 6;
+            break;
+        case 7:  // 复非对称矩阵
+            mtype = 13;
+            break;
+        default:
+            mtype = 13; // 默认为复非对称
+        }
+
+        // 配置PARDISO参数
+        iparm[0] = 1;   // 不使用求解器默认值
+        iparm[1] = 2;   // 使用METIS重排序
+        iparm[3] = 0;   // 不进行预处理
+        iparm[4] = 0;   // 不使用用户填充减少排列
+        iparm[5] = 0;   // 解写入x
+        iparm[7] = 2;   // 最大迭代精化步数
+        iparm[9] = 13;  // 透视阈值（10^-13）
+        iparm[10] = 1;  // 使用缩放（对称矩阵）
+        iparm[12] = 1;  // 使用匹配（非对称矩阵）
+        iparm[17] = -1; // 输出非零元素数量
+        iparm[18] = -1; // 输出MFlops
+        iparm[34] = 1;  // 使用从0开始的索引
+        iparm[36] = 0;  // CSR格式
+
+        // 阶段1：分析（符号分解）
+        phase = 11;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &zdum, &zdum, &error);
+
+        if (error != 0) {
+            printf("PARDISO分析阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+        // 阶段2：数值分解
+        phase = 22;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &zdum, &zdum, &error);
+
+        if (error != 0) {
+            printf("PARDISO分解阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+        // 阶段3：求解和迭代精化
+        phase = 33;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            values, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, (MKL_Complex16*)rhsValues, solValues, &error);
+
+        if (error != 0) {
+            printf("PARDISO求解阶段错误: %d\n", error);
+            goto cleanup;
+        }
+
+    cleanup:
+        // 阶段-1：释放内存
+        phase = -1;
+        pardiso(pt, &maxfct, &mnum, &mtype, &phase, &n,
+            &zdum, rowPtr, colIdx, &idum, &nrhs,
+            iparm, &msglvl, &zdum, &zdum, &error);
+
+        return error;
+    }
 }

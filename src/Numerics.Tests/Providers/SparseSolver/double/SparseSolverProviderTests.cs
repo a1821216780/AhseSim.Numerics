@@ -62,6 +62,35 @@ namespace AHSEsim.Numerics.Tests.Providers.SparseSolver.Double
                 AssertHelpers.AlmostEqualRelative(xtrue[i], xactual[i], 12);
         }
 
+        [Test]
+        public void CanSolveSymmetricPositiveDefiniteMatrixPs()
+        {
+            var A = _matrices["SymmetricPositiveDefinite5x5"].UpperTriangle();
+
+            var csr = A.Storage as SparseCompressedRowMatrixStorage<double>;
+            csr.PopulateExplicitZerosOnDiagonal();
+
+            var rowCount = csr.RowCount;
+            var columnCount = csr.ColumnCount;
+            var valueCount = csr.ValueCount;
+            var values = csr.Values;
+            var rowPointers = csr.RowPointers;
+            var columnIndices = csr.ColumnIndices;
+
+            var xactual = new double[rowCount];
+
+            var error = SparseSolverControl.Provider.Solve(DssMatrixStructure.Symmetric, DssMatrixType.PositiveDefinite,
+                rowCount, columnCount, valueCount, rowPointers, columnIndices, values,
+                1, _b5, xactual);
+
+            Assert.That(error, Is.EqualTo(DssStatus.MKL_DSS_SUCCESS));
+
+            var xtrue = new double[] { -979.0 / 3.0, 983.0, 1961.0 / 12.0, 398.0, 123.0 / 2.0 };
+
+            for (int i = 0; i < xtrue.Length; i++)
+                AssertHelpers.AlmostEqualRelative(xtrue[i], xactual[i], 12);
+        }
+
         /// <summary>
         /// Can solve Ax=b using direct sparse solver.
         /// </summary>

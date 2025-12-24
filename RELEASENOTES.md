@@ -1,3 +1,6 @@
+### 6.0.0-beta4 - 2025-12-19
+* ADD SparseMatrix Solve function:PARDISOSolve and DSSSolve , you must use MKL x64!!!
+
 ### 6.0.0-beta1 - 2023-12-17
 * attempt to revive this project with upgraded tooling, for net8.0, net6.0, net48 and netstandard2.0
 * many contributions, proper release notes with attributions will follow. thank you all!

@@ -1,3 +1,7 @@
+### 6.0.0-Beta4 - 2025-12-19
+* ADD SparseMatrix Solve function:PARDISOSolve andDSSSolve
+
+
 ### 6.0.0 - 2025-11-30
 * New binary names and package structure with runtime folders
 * With Intel oneAPI 2025.3

@@ -1,6 +1,11 @@
 #pragma once
+
+
 #include "mkl_types.h"
 #include "wrapper_common.h"
+#include "mkl_pardiso.h"
+
+
 
 //#ifdef MKLWRAPPER_EXPORTS
 //#define MKLWRAPPER_API __declspec(dllexport)

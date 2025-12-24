@@ -43,7 +43,7 @@ namespace AHSEsim.Numerics.Providers.MKL
         static bool _nativeX86;
         static bool _nativeX64;
         static bool _nativeIA64;
-        static bool _loaded;
+        public static bool _loaded;
 
         public static bool IsAvailable(string hintPath = null)
         {

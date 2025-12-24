@@ -36,7 +36,7 @@ namespace AHSEsim.Numerics
     /// <summary>
     /// Globalized String Handling Helpers
     /// </summary>
-    internal static class GlobalizationHelper
+    public static class GlobalizationHelper
     {
         /// <summary>
         /// Tries to get a <see cref="CultureInfo"/> from the format provider,

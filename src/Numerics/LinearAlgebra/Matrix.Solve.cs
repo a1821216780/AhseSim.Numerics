@@ -359,5 +359,6 @@ namespace AHSEsim.Numerics.LinearAlgebra
             TrySolveIterative(input, result, solver, stopCriteria);
             return result;
         }
+
     }
 }
